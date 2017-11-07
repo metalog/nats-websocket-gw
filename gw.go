@@ -147,11 +147,15 @@ func (gw *Gateway) wsToNatsWorker(nats net.Conn, ws *websocket.Conn, doneCh chan
 }
 
 func (gw *Gateway) Handler(w http.ResponseWriter, r *http.Request) {
+	gw.HandlerWithHeader(w, r, nil)
+}
+
+func (gw *Gateway) HandlerWithHeader(w http.ResponseWriter, r *http.Request, responseHeader http.Header) {
 	upgrader := defaultUpgrader
 	if gw.settings.WSUpgrader != nil {
 		upgrader = *gw.settings.WSUpgrader
 	}
-	wsConn, err := upgrader.Upgrade(w, r, nil)
+	wsConn, err := upgrader.Upgrade(w, r, responseHeader)
 	if err != nil {
 		gw.onError(err)
 		return
